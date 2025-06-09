@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 300px;
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #03a9f4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .weather-box {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button id="getWeatherBtn">Get Weather</button>
+    <div id="weatherResult" class="weather-box"></div>
+  </div>
+
+  <script>
+    const apiKey = 'fe451934ea2036046dba4d4487880768';
+
+    document.getElementById('getWeatherBtn').addEventListener('click', () => {
+      const city = document.getElementById("cityInput").value.trim();
+      const result = document.getElementById("weatherResult");
+
+      if (!city) {
+        result.innerHTML = "<p>Please enter a city name.</p>";
+        return;
+      }
+
+      result.innerHTML = "<p>Loading...</p>";
+
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+        .then(response => {
+          if (!response.ok) throw new Error("City not found");
+          return response.json();
+        })
+        .then(data => {
+          const weatherHTML = `
+            <h2>${data.name}, ${data.sys.country}</h2>
+            <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" alt="Weather icon"/>
+            <p><strong>${data.main.temp}°C</strong></p>
+            <p>${data.weather[0].description}</p>
+          `;
+          result.innerHTML = weatherHTML;
+        })
+        .catch(error => {
+          result.innerHTML = `<p>${error.message}</p>`;
+        });
+    });
+  </script>
+</body>
+</html>
